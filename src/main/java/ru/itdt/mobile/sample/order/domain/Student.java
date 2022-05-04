@@ -29,7 +29,8 @@ public class Student {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Preference> preferences;
     @ToString.Exclude
-    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "teacher_id_fk"), name = "teacher_id")
     private Teacher teacher;
 
     @Override

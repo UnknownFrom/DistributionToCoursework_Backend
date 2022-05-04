@@ -13,5 +13,6 @@ import ru.itdt.mobile.sample.order.domain.Teacher;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TeacherMapper {
     Teacher mapDTOToEntity(TeacherDTO teacherDTO);
+    TeacherDTO mapToDTO(Teacher teacher);
     TeacherDTO mapRequestToDTO(TeacherPostRequest teacherPostRequest);
 }

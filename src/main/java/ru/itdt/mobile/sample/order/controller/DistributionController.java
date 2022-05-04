@@ -12,12 +12,11 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
+import ru.itdt.mobile.sample.order.bean.TeacherDTO;
 import ru.itdt.mobile.sample.order.bean.request.StudentPostRequest;
 import ru.itdt.mobile.sample.order.bean.request.TeacherPostRequest;
 import ru.itdt.mobile.sample.order.bean.response.ErrorResponse;
-import ru.itdt.mobile.sample.order.bean.response.OrderItemResponse;
 import ru.itdt.mobile.sample.order.service.DistributionService;
-import ru.itdt.mobile.sample.order.util.SecurityUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -130,10 +129,32 @@ public class DistributionController {
     })
     public Response saveStudent(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentPostRequest.class))) final StudentPostRequest studentPostRequest,
-                                  @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                                  @Context final SecurityContext sc) {
-        distributionService.saveStudent(studentPostRequest);
-        return Response.ok().build();
+                                @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
+                                @Context final SecurityContext sc) {
+        return Response.ok(distributionService.saveStudent(studentPostRequest)).build();
+    }
+
+    @PUT
+    @Path("/student/{studentId}/preferredTeacher/{teacherId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Обновить предпочтительного руководителя для студента")
+    @APIResponses({
+            @APIResponse(description = "Адрес доставки обновлён",
+                    responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
+            @APIResponse(description = "Неудачный результат обновления, так как адреса с таким id не существует",
+                    responseCode = "404",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response updatePreferredTeacherForStudent(@PathParam("studentId") final long studentId, @PathParam("teacherId") final long teacherId) {
+        distributionService.updatePreferredTeacherForStudent(studentId, teacherId);
+        return Response
+                .ok()
+                .build();
     }
 
     @POST
@@ -149,9 +170,46 @@ public class DistributionController {
     })
     public Response saveTeacher(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentPostRequest.class))) final TeacherPostRequest teacherPostRequest,
-                                  @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
+                                @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
+                                @Context final SecurityContext sc) {
+        return Response.ok(distributionService.saveTeacher(teacherPostRequest)).build();
+    }
+
+    @GET
+    @Path("/teachers")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Получить всех учителей")
+    @APIResponses({
+            @APIResponse(description = "Учителя получены", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
+            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
+                    responseCode = "404",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response getAllTeachers(@Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
                                   @Context final SecurityContext sc) {
-        distributionService.saveTeacher(teacherPostRequest);
-        return Response.ok().build();
+        return Response.ok(distributionService.getAllTeachers()).build();
+    }
+
+    @GET
+    @Path("/students")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Получить всех учителей")
+    @APIResponses({
+            @APIResponse(description = "Учителя получены", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
+            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
+                    responseCode = "404",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response getAllStudents(@Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
+                                   @Context final SecurityContext sc) {
+        return Response.ok(distributionService.getAllStudents()).build();
     }
 }

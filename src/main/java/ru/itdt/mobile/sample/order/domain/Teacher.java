@@ -25,14 +25,7 @@ public class Teacher {
     private String login;
     @Column(name = "password", nullable = false)
     private String password;
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "coursework_id_fk"), name = "coursework_id")
-    private Coursework coursework;
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "student_id_fk"), name = "student_id")
-    private Student student;
+
 
     @Override
     public boolean equals(Object o) {

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -18,4 +19,11 @@ public class Coursework {
     private Long id;
     @Column(name = "name")
     private String name;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Preference> preferences;
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "teacher_id_fk"), name = "teacher_id")
+    private Teacher teacher;
 }

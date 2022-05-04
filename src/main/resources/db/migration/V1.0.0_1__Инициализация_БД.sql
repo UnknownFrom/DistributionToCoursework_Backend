@@ -1,18 +1,3 @@
-CREATE TABLE public.student
-(
-    id       bigint                 NOT NULL,
-    name     character varying(255) NOT NULL,
-    login    character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
-    CONSTRAINT student_pk PRIMARY KEY (id)
-);
-
-CREATE TABLE public.coursework
-(
-    id   bigint                 NOT NULL,
-    name character varying(255) NOT NULL,
-    CONSTRAINT coursework_pk PRIMARY KEY (id)
-);
 
 CREATE TABLE public.teacher
 (
@@ -20,18 +5,35 @@ CREATE TABLE public.teacher
     name          character varying(255) NOT NULL,
     login         character varying(255) NOT NULL,
     password      character varying(255) NOT NULL,
-    coursework_id bigint,
-    student_id    bigint,
-    CONSTRAINT teacher_pk PRIMARY KEY (id),
-    CONSTRAINT coursework_id_fk FOREIGN KEY (coursework_id)
-        REFERENCES public.coursework (id) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
-    CONSTRAINT student_id_fk FOREIGN KEY (student_id)
-        REFERENCES public.student (id) MATCH SIMPLE
+    CONSTRAINT teacher_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE public.student
+(
+    id         bigint                 NOT NULL,
+    name       character varying(255) NOT NULL,
+    login      character varying(255) NOT NULL,
+    password   character varying(255) NOT NULL,
+    teacher_id bigint,
+    CONSTRAINT student_pk PRIMARY KEY (id),
+    CONSTRAINT teacher_id_fk FOREIGN KEY (teacher_id)
+        REFERENCES public.teacher (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+CREATE TABLE public.coursework
+(
+    id         bigint                 NOT NULL,
+    name       character varying(255) NOT NULL,
+    teacher_id bigint,
+    CONSTRAINT coursework_pk PRIMARY KEY (id),
+    CONSTRAINT teacher_id_fk FOREIGN KEY (teacher_id)
+        REFERENCES public.teacher (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 
 
 

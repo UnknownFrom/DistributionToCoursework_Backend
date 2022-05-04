@@ -38,7 +38,7 @@ public class DistributionService {
     @Inject
     PreferenceMapper preferenceMapper;
 
-    public void saveStudent(final StudentPostRequest studentPostRequest) {
+    public Student saveStudent(final StudentPostRequest studentPostRequest) {
         StudentDTO studentDTO = studentMapper.mapRequestToDTO(studentPostRequest);
         Student student = studentMapper.mapDTOToEntity(studentDTO);
 
@@ -46,10 +46,15 @@ public class DistributionService {
                 .stream()
                 .map(preferenceDTO -> preferenceMapper.mapDTOToEntity(preferenceDTO, student))
                 .collect(Collectors.toList()));*/
-        studentRepository.save(student);
+        return studentRepository.save(student);
     }
 
-    public void saveTeacher(final TeacherPostRequest teacherPostRequest) {
+    public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId);
+        studentRepository.updateStudent(studentId, teacher);
+    }
+
+    public Teacher saveTeacher(final TeacherPostRequest teacherPostRequest) {
         TeacherDTO teacherDTO = teacherMapper.mapRequestToDTO(teacherPostRequest);
         Teacher teacher = teacherMapper.mapDTOToEntity(teacherDTO);
 
@@ -57,7 +62,19 @@ public class DistributionService {
                 .stream()
                 .map(preferenceDTO -> preferenceMapper.mapDTOToEntity(preferenceDTO, student))
                 .collect(Collectors.toList()));*/
-        teacherRepository.save(teacher);
+        return teacherRepository.save(teacher);
+    }
+
+    public List<Teacher> getAllTeachers() {
+        return teacherRepository.findAll()
+                .stream()
+                .collect(Collectors.toList());
+    }
+
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     public List<OrderItemResponse> getOrderItems(long orderId) {

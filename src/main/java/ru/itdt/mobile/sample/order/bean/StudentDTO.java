@@ -19,5 +19,5 @@ public class StudentDTO {
     private String name;
     private String login;
     private String password;
-    //private List<Preference> preferences;
+    private List<Preference> preferences;
 }

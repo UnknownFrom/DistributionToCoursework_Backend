@@ -25,8 +25,10 @@ public class Student {
     private String login;
     @Column(name = "password", nullable = false)
     private String password;
-    @ToString.Exclude
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(name = "student_preference",
+    joinColumns = {@JoinColumn(name = "student_id")},
+    inverseJoinColumns = {@JoinColumn(name = "preference_id")})
     private List<Preference> preferences;
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)

@@ -19,8 +19,10 @@ public class Coursework {
     private Long id;
     @Column(name = "name")
     private String name;
-    @ToString.Exclude
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(name = "coursework_preference",
+            joinColumns = {@JoinColumn(name = "coursework_id")},
+            inverseJoinColumns = {@JoinColumn(name = "preference_id")})
     private List<Preference> preferences;
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)

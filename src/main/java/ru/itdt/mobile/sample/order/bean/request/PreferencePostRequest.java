@@ -1,19 +1,14 @@
-package ru.itdt.mobile.sample.order.bean;
+package ru.itdt.mobile.sample.order.bean.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import java.math.BigDecimal;
-
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class PreferenceDTO {
+public class PreferencePostRequest {
     @Schema(description = "Название предпочтения", example = "Программирование")
     private String name;
 }

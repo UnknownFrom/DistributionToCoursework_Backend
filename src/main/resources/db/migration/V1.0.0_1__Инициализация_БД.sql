@@ -1,10 +1,9 @@
-
 CREATE TABLE public.teacher
 (
-    id            bigint                 NOT NULL,
-    name          character varying(255) NOT NULL,
-    login         character varying(255) NOT NULL,
-    password      character varying(255) NOT NULL,
+    id       bigint                 NOT NULL,
+    name     character varying(255) NOT NULL,
+    login    character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
     CONSTRAINT teacher_pk PRIMARY KEY (id)
 );
 
@@ -34,18 +33,35 @@ CREATE TABLE public.coursework
         ON DELETE CASCADE
 );
 
-
-
-
 CREATE TABLE public.preference
 (
     id            bigint                 NOT NULL,
     name          character varying(255) NOT NULL,
+    CONSTRAINT preference_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE public.student_preference
+(
+    preference_id bigint,
     student_id    bigint,
-    coursework_id bigint,
-    CONSTRAINT preference_pk PRIMARY KEY (id),
+    CONSTRAINT student_preference_pk PRIMARY KEY (preference_id, student_id),
+    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
+        REFERENCES public.preference (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT student_id_fk FOREIGN KEY (student_id)
         REFERENCES public.student (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE public.coursework_preference
+(
+    preference_id bigint,
+    coursework_id bigint,
+    CONSTRAINT coursework_preference_pk PRIMARY KEY (preference_id, coursework_id),
+    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
+        REFERENCES public.preference (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT coursework_id_fk FOREIGN KEY (coursework_id)

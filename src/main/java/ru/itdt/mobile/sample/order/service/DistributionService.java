@@ -1,26 +1,25 @@
 package ru.itdt.mobile.sample.order.service;
 
+import ru.itdt.mobile.sample.order.bean.PreferenceDTO;
 import ru.itdt.mobile.sample.order.bean.StudentDTO;
 import ru.itdt.mobile.sample.order.bean.TeacherDTO;
+import ru.itdt.mobile.sample.order.bean.request.PreferencePostRequest;
 import ru.itdt.mobile.sample.order.bean.request.StudentPostRequest;
 import ru.itdt.mobile.sample.order.bean.request.TeacherPostRequest;
-import ru.itdt.mobile.sample.order.bean.response.OrderItemResponse;
-import ru.itdt.mobile.sample.order.domain.Coursework;
+import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.domain.Student;
 import ru.itdt.mobile.sample.order.domain.Teacher;
-import ru.itdt.mobile.sample.order.exception.OrderItemNotExistException;
 import ru.itdt.mobile.sample.order.exception.ShopOrderNotExistException;
 import ru.itdt.mobile.sample.order.mapper.PreferenceMapper;
 import ru.itdt.mobile.sample.order.mapper.StudentMapper;
 import ru.itdt.mobile.sample.order.mapper.TeacherMapper;
-import ru.itdt.mobile.sample.order.repository.OrderItemRepository;
+import ru.itdt.mobile.sample.order.repository.PreferenceRepository;
 import ru.itdt.mobile.sample.order.repository.StudentRepository;
 import ru.itdt.mobile.sample.order.repository.TeacherRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -30,7 +29,7 @@ public class DistributionService {
     @Inject
     TeacherRepository teacherRepository;
     @Inject
-    OrderItemRepository orderItemRepository;
+    PreferenceRepository preferenceRepository;
     @Inject
     StudentMapper studentMapper;
     @Inject
@@ -49,11 +48,6 @@ public class DistributionService {
         return studentRepository.save(student);
     }
 
-    public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId);
-        studentRepository.updateStudent(studentId, teacher);
-    }
-
     public Teacher saveTeacher(final TeacherPostRequest teacherPostRequest) {
         TeacherDTO teacherDTO = teacherMapper.mapRequestToDTO(teacherPostRequest);
         Teacher teacher = teacherMapper.mapDTOToEntity(teacherDTO);
@@ -65,10 +59,25 @@ public class DistributionService {
         return teacherRepository.save(teacher);
     }
 
-    public List<Teacher> getAllTeachers() {
-        return teacherRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
+    public Preference savePreference(final PreferencePostRequest preferencePostRequest) {
+        PreferenceDTO preferenceDTO = preferenceMapper.mapToDTO(preferencePostRequest);
+        Preference preference = preferenceMapper.mapDTOToEntity(preferenceDTO);
+        return preferenceRepository.save(preference);
+    }
+
+    public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId);
+        studentRepository.updateStudentPreferredTeacher(studentId, teacher);
+    }
+
+    public void updatePreferencesForStudent(List<Preference> preferences, long studentId) {
+        studentRepository.updateStudentPreferences(studentId, preferences);
+    }
+    public void test(PreferenceDTO preferenceDTO, long studentId) {
+        //Preference preference = preferenceMapper.mapDTOToEntity(preferenceDTO, studentRepository.findById(studentId));
+        List<Preference> preferences = preferenceRepository.listAll();
+        studentRepository.updateStudentPreferences(studentId, preferences);
+        //preferenceRepository.save(preference);
     }
 
     public List<Student> getAllStudents() {
@@ -77,19 +86,16 @@ public class DistributionService {
                 .collect(Collectors.toList());
     }
 
-    public List<OrderItemResponse> getOrderItems(long orderId) {
-        return orderItemRepository.findAllOrderItemsByShopOrderId(orderId)
+    public List<Teacher> getAllTeachers() {
+        return teacherRepository.findAll()
                 .stream()
-                .map(preferenceMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public OrderItemResponse getOrderItem(long orderId, long productId) {
-        Optional<Coursework> orderItem = orderItemRepository.findOrderItemByShopOrderId(orderId, productId);
-        if (orderItem.isEmpty()) {
-            throw new OrderItemNotExistException(String.format("Товара с id=%d в данном заказе не существует", productId));
-        }
-        return preferenceMapper.mapToResponse(orderItem.get());
+    public List<Preference> getAllPreferences() {
+        return preferenceRepository.findAll()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     public void checkAccess(long orderId, long userId) {

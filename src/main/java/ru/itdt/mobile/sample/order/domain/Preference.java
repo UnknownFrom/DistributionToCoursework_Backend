@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,14 +21,6 @@ public class Preference {
     private Long id;
     @Column(name = "name", nullable = false)
     private String name;
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "coursework_id_fk"), name = "coursework_id")
-    private Coursework coursework;
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "student_id_fk"), name = "student_id")
-    private Student student;
 
     @Override
     public boolean equals(Object o) {

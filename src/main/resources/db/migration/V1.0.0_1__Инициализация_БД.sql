@@ -4,7 +4,8 @@ CREATE TABLE public.teacher
     name     character varying(255) NOT NULL,
     login    character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
-    CONSTRAINT teacher_pk PRIMARY KEY (id)
+    CONSTRAINT teacher_pk PRIMARY KEY (id),
+    CONSTRAINT unique_teacher UNIQUE (login)
 );
 
 CREATE TABLE public.student
@@ -15,6 +16,7 @@ CREATE TABLE public.student
     password   character varying(255) NOT NULL,
     teacher_id bigint,
     CONSTRAINT student_pk PRIMARY KEY (id),
+    CONSTRAINT unique_student UNIQUE (login),
     CONSTRAINT teacher_id_fk FOREIGN KEY (teacher_id)
         REFERENCES public.teacher (id) MATCH SIMPLE
         ON UPDATE CASCADE
@@ -37,7 +39,8 @@ CREATE TABLE public.preference
 (
     id            bigint                 NOT NULL,
     name          character varying(255) NOT NULL,
-    CONSTRAINT preference_pk PRIMARY KEY (id)
+    CONSTRAINT preference_pk PRIMARY KEY (id),
+    CONSTRAINT unique_preference UNIQUE (name)
 );
 
 CREATE TABLE public.student_preference

@@ -13,7 +13,8 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "student")
+@Table(name = "student",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"login"})})
 public class Student {
     @Id
     @SequenceGenerator(name = "student_id_seq", sequenceName = "student_id_seq", allocationSize = 1)
@@ -25,7 +26,7 @@ public class Student {
     private String login;
     @Column(name = "password", nullable = false)
     private String password;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_preference",
     joinColumns = {@JoinColumn(name = "student_id")},
     inverseJoinColumns = {@JoinColumn(name = "preference_id")})

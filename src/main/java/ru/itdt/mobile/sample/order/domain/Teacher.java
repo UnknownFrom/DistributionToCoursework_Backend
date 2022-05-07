@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "teacher")
+@Table(name = "teacher", uniqueConstraints = {@UniqueConstraint(columnNames = {"login"})})
 @Getter
 @Setter
 @Builder

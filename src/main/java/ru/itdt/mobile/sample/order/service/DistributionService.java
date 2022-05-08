@@ -43,10 +43,9 @@ public class DistributionService {
     @Inject
     DistributionMapper distributionMapper;
 
-    public AuthStudentResponse saveStudent(final StudentPostRequest studentPostRequest) {
+    public AuthStudentResponse saveStudent(final SaveUserPostRequest saveUserPostRequest) {
         try {
-            StudentDTO studentDTO = studentMapper.mapRequestToDTO(studentPostRequest);
-            Student student = studentMapper.mapDTOToEntity(studentDTO);
+            Student student = studentMapper.mapRequestToEntity(saveUserPostRequest);
             return studentMapper.mapEntityToResponse(studentRepository.save(student));
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,10 +53,9 @@ public class DistributionService {
         }
     }
 
-    public Teacher saveTeacher(final TeacherPostRequest teacherPostRequest) {
+    public Teacher saveTeacher(final SaveUserPostRequest saveUserPostRequest) {
         try {
-            TeacherDTO teacherDTO = teacherMapper.mapRequestToDTO(teacherPostRequest);
-            Teacher teacher = teacherMapper.mapDTOToEntity(teacherDTO);
+            Teacher teacher = teacherMapper.mapRequestToEntity(saveUserPostRequest);
             return teacherRepository.save(teacher);
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,8 +80,7 @@ public class DistributionService {
             if (preferencePostRequest.getName().isEmpty()) {
                 throw new Exception();
             }
-            PreferenceDTO preferenceDTO = preferenceMapper.mapToDTO(preferencePostRequest);
-            Preference preference = preferenceMapper.mapDTOToEntity(preferenceDTO);
+            Preference preference = preferenceMapper.mapToEntity(preferencePostRequest);
             return preferenceRepository.save(preference);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,6 +107,12 @@ public class DistributionService {
     public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
         Teacher teacher = teacherRepository.findById(teacherId);
         studentRepository.updateStudentPreferredTeacher(studentId, teacher);
+    }
+    public void updateCourseworkForStudent(UpdateCourseworkForStudentRequest updateCourseworkForStudentRequest, long studentId) {
+        List<Coursework> selectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getSelected());
+        List<Coursework> unselectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getUnselected());
+        studentRepository.updateStudentSelectedCoursework(studentId, selectedCourseworkList);
+        studentRepository.updateStudentUnselectedCoursework(studentId, unselectedCourseworkList);
     }
 
     public void updatePreferencesForStudent(List<Preference> preferences, long studentId) {

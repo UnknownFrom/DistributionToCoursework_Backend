@@ -35,6 +35,16 @@ public class Student {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "teacher_id_fk"), name = "teacher_id")
     private Teacher teacher;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "student_coursework_selected",
+            joinColumns = {@JoinColumn(name = "student_id")},
+            inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
+    private List<Coursework> selectedCoursework;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "student_coursework_unselected",
+            joinColumns = {@JoinColumn(name = "student_id")},
+            inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
+    private List<Coursework> unselectedCoursework;
 
     @Override
     public boolean equals(Object o) {

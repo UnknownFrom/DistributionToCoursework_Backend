@@ -1,6 +1,5 @@
 package ru.itdt.mobile.sample.order.service;
 
-import org.eclipse.microprofile.openapi.models.security.SecurityScheme;
 import ru.itdt.mobile.sample.order.domain.Coursework;
 import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.domain.Score;
@@ -17,13 +16,12 @@ public class DistributorService {
     /// <param name="student"></param>
     /// <param name="coursework"></param>
     /// <returns></returns>
-    private static Integer scoreForCoursework(Student student, Coursework coursework)
-    {
+    private static Integer scoreForCoursework(Student student, Coursework coursework) {
         int score = 0;
         score += scoreForSupervisor(student, coursework);
         //score += scoreForCompetencies(student, coursework);
         score += scoreForPreferences(student, coursework);
-        //score += scoreForChoice(student, coursework);
+        score += scoreForChoice(student, coursework);
         return score;
     }
 
@@ -32,8 +30,7 @@ public class DistributorService {
     /// </summary>
     /// <param name="students"></param>
     /// <param name="courseworks"></param>
-    public static List<Integer> ToDistribute(List<Student> students, List<Coursework> courseworks)
-    {
+    public static List<Integer> ToDistribute(List<Student> students, List<Coursework> courseworks) {
         List<List<Integer>> matrix = CreateMatrix(students, courseworks);
         List<Integer> courseworkForStudent = Distributor.VengrAlgorithm(matrix);
         return courseworkForStudent;
@@ -51,8 +48,7 @@ public class DistributorService {
     /// <param name="students"></param>
     /// <param name="courseworks"></param>
     /// <returns></returns>
-    private static List<List<Integer>> CreateMatrix(List<Student> students, List<Coursework> courseworks)
-    {
+    private static List<List<Integer>> CreateMatrix(List<Student> students, List<Coursework> courseworks) {
         List<List<Integer>> matrix = new ArrayList<>();
 
         for (Student student : students) {
@@ -81,15 +77,11 @@ public class DistributorService {
         return score;
     }*/
 
-    private static int scoreForPreferences(Student student, Coursework coursework)
-    {
+    private static int scoreForPreferences(Student student, Coursework coursework) {
         int score = 0;
-        if (coursework.getPreferences() != null && student.getPreferences() != null)
-        {
-            for (Preference preference : coursework.getPreferences())
-            {
-                if (student.getPreferences().contains(preference))
-                {
+        if (coursework.getPreferences() != null && student.getPreferences() != null) {
+            for (Preference preference : coursework.getPreferences()) {
+                if (student.getPreferences().contains(preference)) {
                     score += Score.preference;
                 }
             }
@@ -97,44 +89,28 @@ public class DistributorService {
         return score;
     }
 
-    private static int scoreForSupervisor(Student student, Coursework coursework)
-    {
+    private static int scoreForSupervisor(Student student, Coursework coursework) {
         int score = 0;
-        if (coursework.getTeacher() != null && student.getTeacher() != null && student.getTeacher() == coursework.getTeacher())
-        {
+        if (coursework.getTeacher() != null && student.getTeacher() != null && student.getTeacher() == coursework.getTeacher()) {
             score += Score.teacher;
         }
         return score;
     }
 
-    /*private static int scoreForChoice(Student student, Coursework coursework)
-    {
+    private static int scoreForChoice(Student student, Coursework coursework) {
         int score = 0;
-        foreach (CourseworkChoice сourseworkСhoice in student.courseworksChoice)
-        {
-            if(сourseworkСhoice.courseworkId == coursework.id)
-            {
-                switch (сourseworkСhoice.choice)
-                {
-                    case Choice.YES:
-                        score += Score.ChoiceYes;
-                        break;
-                    case Choice.MAYBE:
-                        score += Score.ChoiceMaybe;
-                        break;
-                    case Choice.NO:
-                        score += Score.ChoiceNo;
-                        break;
-                    case Choice.NOTHING:
-                        score += Score.ChoiceNothing;
-                        break;
-                }
+        for (Coursework selectedCoursework : student.getSelectedCoursework()) {
+            if (selectedCoursework.equals(coursework)) {
+                score += Score.selected;
+                return score;
             }
         }
-        if (score == 0)
-        {
-            score += Score.ChoiceNothing;
+        for (Coursework unselectedCoursework : student.getUnselectedCoursework()) {
+            if (unselectedCoursework.equals(coursework)) {
+                score += Score.unselected;
+                return score;
+            }
         }
         return score;
-    }*/
+    }
 }

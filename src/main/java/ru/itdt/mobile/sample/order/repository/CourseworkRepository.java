@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CourseworkRepository implements PanacheRepository<Coursework> {
@@ -33,5 +34,12 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
         preferenceList.addAll(preferences);
         coursework.setPreferences(preferences);
         persist(coursework);
+    }
+
+    public List<Coursework> getCourseworkList(List<Long> courseworkId) {
+        return courseworkId
+                .stream()
+                .map(this::findById)
+                .collect(Collectors.toList());
     }
 }

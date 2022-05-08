@@ -10,7 +10,6 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
-import ru.itdt.mobile.sample.order.bean.PreferenceDTO;
 import ru.itdt.mobile.sample.order.bean.TeacherDTO;
 import ru.itdt.mobile.sample.order.bean.request.*;
 import ru.itdt.mobile.sample.order.bean.response.ErrorResponse;
@@ -33,45 +32,43 @@ public class DistributionController {
     @Path("/student")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Сохранить студента")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
+            @APIResponse(description = "Студент сохранён", responseCode = "200"),
             @APIResponse(description = "Некорректный токен",
                     responseCode = "401",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response saveStudent(@RequestBody(
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentPostRequest.class))) final StudentPostRequest studentPostRequest,
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaveUserPostRequest.class))) final SaveUserPostRequest saveUserPostRequest,
                                 @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
                                 @Context final SecurityContext sc) {
-        return Response.ok(distributionService.saveStudent(studentPostRequest)).build();
+        return Response.ok(distributionService.saveStudent(saveUserPostRequest)).build();
     }
 
     @POST
     @Path("/teacher")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Сохранить преподавателя")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
+            @APIResponse(description = "Преподаватель сохранён", responseCode = "200"),
             @APIResponse(description = "Некорректный токен",
                     responseCode = "401",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response saveTeacher(@RequestBody(
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentPostRequest.class))) final TeacherPostRequest teacherPostRequest,
-                                @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                                @Context final SecurityContext sc) {
-        return Response.ok(distributionService.saveTeacher(teacherPostRequest)).build();
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaveUserPostRequest.class))) final SaveUserPostRequest saveUserPostRequest) {
+        return Response.ok(distributionService.saveTeacher(saveUserPostRequest)).build();
     }
 
     @POST
     @Path("/preference")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Сохранить предпочтение")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
+            @APIResponse(description = "Предпочтение сохранено", responseCode = "200"),
             @APIResponse(description = "Некорректный токен",
                     responseCode = "401",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -85,9 +82,9 @@ public class DistributionController {
     @Path("/coursework")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Сохранить курсовую")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
+            @APIResponse(description = "Курсовая сохранена", responseCode = "200"),
             @APIResponse(description = "Некорректный токен",
                     responseCode = "401",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -95,6 +92,24 @@ public class DistributionController {
     public Response saveCoursework(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkPostRequest.class))) final CourseworkPostRequest courseworkPostRequest) {
         return Response.ok(distributionService.saveCoursework(courseworkPostRequest)).build();
+    }
+
+    @PUT
+    @Path("/student/{studentId}/coursework")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Сохранить курсовую")
+    @APIResponses({
+            @APIResponse(description = "Курсовая сохранена", responseCode = "200"),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response updateCourseworkForStudent(@RequestBody(
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCourseworkForStudentRequest.class))) final UpdateCourseworkForStudentRequest updateCourseworkForStudentRequest,
+                                               @PathParam("studentId") final long studentId) {
+        distributionService.updateCourseworkForStudent(updateCourseworkForStudentRequest, studentId);
+        return Response.ok().build();
     }
 
    /* @POST

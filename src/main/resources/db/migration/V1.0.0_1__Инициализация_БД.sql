@@ -58,6 +58,36 @@ CREATE TABLE public.student_preference
         ON DELETE CASCADE
 );
 
+CREATE TABLE public.student_coursework_selected
+(
+    student_id    bigint,
+    coursework_id bigint,
+    CONSTRAINT student_coursework_selected_pk PRIMARY KEY (coursework_id, student_id),
+    CONSTRAINT student_id_fk FOREIGN KEY (student_id)
+        REFERENCES public.student (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT coursework_id_fk FOREIGN KEY (coursework_id)
+        REFERENCES public.coursework (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE public.student_coursework_unselected
+(
+    student_id    bigint,
+    coursework_id bigint,
+    CONSTRAINT student_coursework_unselected_pk PRIMARY KEY (coursework_id, student_id),
+    CONSTRAINT student_id_fk FOREIGN KEY (student_id)
+        REFERENCES public.student (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT coursework_id_fk FOREIGN KEY (coursework_id)
+        REFERENCES public.coursework (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 CREATE TABLE public.coursework_preference
 (
     preference_id bigint,

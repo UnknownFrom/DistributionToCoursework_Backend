@@ -258,6 +258,42 @@ public class DistributionController {
     }
 
     @GET
+    @Path("/teacher/{teacherId}/courseworks")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Получить всех учителей")
+    @APIResponses({
+            @APIResponse(description = "Учителя получены", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
+            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
+                    responseCode = "404",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response getCourseworksForTeachers(@PathParam("teacherId") final long teacherId) {
+        return Response.ok(distributionService.getCourseworkForTeacher(teacherId)).build();
+    }
+
+    @GET
+    @Path("/coursework/{courseworkId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Получить всех учителей")
+    @APIResponses({
+            @APIResponse(description = "Учителя получены", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
+            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
+                    responseCode = "404",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @APIResponse(description = "Некорректный токен",
+                    responseCode = "401",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response getCoursework(@PathParam("courseworkId") final long courseworkId) {
+        return Response.ok(distributionService.getCoursework(courseworkId)).build();
+    }
+
+    @GET
     @Path("/students")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Получить всех учителей")

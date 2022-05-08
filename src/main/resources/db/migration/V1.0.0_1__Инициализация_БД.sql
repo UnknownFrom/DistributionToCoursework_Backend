@@ -29,6 +29,7 @@ CREATE TABLE public.coursework
     name       character varying(255) NOT NULL,
     teacher_id bigint,
     CONSTRAINT coursework_pk PRIMARY KEY (id),
+    CONSTRAINT unique_coursework UNIQUE (name),
     CONSTRAINT teacher_id_fk FOREIGN KEY (teacher_id)
         REFERENCES public.teacher (id) MATCH SIMPLE
         ON UPDATE CASCADE

@@ -104,6 +104,26 @@ public class DistributionService {
         }
     }
 
+    public List<CourseworkShort> getCourseworkForTeacher(long teacherId) {
+        try {
+            return courseworkRepository
+                    .getCourseworkList(teacherId)
+                    .stream()
+                    .map(courseworkMapper::mapEntityToShort)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public CourseworkResponse getCoursework(long courseworkId) {
+        try {
+            return courseworkMapper.mapEntityToResponse(courseworkRepository.findById(courseworkId));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
         Teacher teacher = teacherRepository.findById(teacherId);
         studentRepository.updateStudentPreferredTeacher(studentId, teacher);

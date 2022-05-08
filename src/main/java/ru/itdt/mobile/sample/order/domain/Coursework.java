@@ -3,7 +3,6 @@ package ru.itdt.mobile.sample.order.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -11,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
-@Table(name = "coursework")
+@Table(name = "coursework", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 public class Coursework {
     @Id
     @SequenceGenerator(name = "coursework_id_seq", sequenceName = "coursework_id_seq", allocationSize = 1)

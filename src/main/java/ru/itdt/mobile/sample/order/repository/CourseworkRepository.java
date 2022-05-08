@@ -3,13 +3,10 @@ package ru.itdt.mobile.sample.order.repository;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import ru.itdt.mobile.sample.order.domain.Coursework;
 import ru.itdt.mobile.sample.order.domain.Preference;
-import ru.itdt.mobile.sample.order.domain.Student;
-import ru.itdt.mobile.sample.order.domain.Teacher;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -41,5 +38,9 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
                 .stream()
                 .map(this::findById)
                 .collect(Collectors.toList());
+    }
+
+    public List<Coursework> getCourseworkList(long teacherId) {
+        return list("teacher_id = ?1", teacherId);
     }
 }

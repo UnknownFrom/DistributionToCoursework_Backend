@@ -8,7 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveUserPostRequest {
+public class RegisterUserPostRequest {
     @Schema(description = "ФИО", example = "Павел")
     private String name;
     @Schema(description = "Логин", example = "login")

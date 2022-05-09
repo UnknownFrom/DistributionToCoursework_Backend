@@ -3,6 +3,8 @@ package ru.itdt.mobile.sample.order.repository;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import ru.itdt.mobile.sample.order.domain.Coursework;
 import ru.itdt.mobile.sample.order.domain.Preference;
+import ru.itdt.mobile.sample.order.exception.SaveException;
+import ru.itdt.mobile.sample.order.exception.UpdateException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -15,7 +17,7 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
     @Transactional
     public Coursework save(Coursework coursework) {
         if (coursework == null) {
-            throw new IllegalArgumentException("Передан null вместо сущности");
+            throw new SaveException("Передан null вместо сущности");
         }
         persist(coursework);
         return coursework;
@@ -25,7 +27,7 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
     public void updateCourseworkPreferences(long courseworkId, List<Preference> preferences) {
         Coursework coursework = findById(courseworkId);
         if (coursework == null) {
-            throw new IllegalArgumentException(String.format("Курсовая с id=%d не существует", courseworkId));
+            throw new UpdateException(String.format("Курсовая с id=%d не существует", courseworkId));
         }
         List<Preference> preferenceList = coursework.getPreferences();
         preferenceList.addAll(preferences);

@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePreferencesRequest {
-    @Schema(implementation = UpdatePreferencesRequest.class, description = "Предпочтения")
+    @Schema(implementation = Preference.class, description = "Список предпочтений")
     private List<Preference> preferences;
 }

@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.domain.Student;
 import ru.itdt.mobile.sample.order.domain.Teacher;
+import ru.itdt.mobile.sample.order.exception.SaveException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -15,7 +16,7 @@ public class PreferenceRepository implements PanacheRepository<Preference> {
     @Transactional
     public Preference save(Preference preference) {
         if (preference == null) {
-            throw new IllegalArgumentException("Передан null вместо сущности");
+            throw new SaveException("Передан null вместо сущности");
         }
         persist(preference);
         return preference;

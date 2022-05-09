@@ -2,16 +2,19 @@ package ru.itdt.mobile.sample.order.controller;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
-import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
-import ru.itdt.mobile.sample.order.bean.TeacherDTO;
+import ru.itdt.mobile.sample.order.bean.CourseworkShort;
+import ru.itdt.mobile.sample.order.bean.PairStudentCoursework;
+import ru.itdt.mobile.sample.order.bean.StudentShort;
+import ru.itdt.mobile.sample.order.bean.TeacherShort;
 import ru.itdt.mobile.sample.order.bean.request.*;
+import ru.itdt.mobile.sample.order.bean.response.AuthStudentResponse;
+import ru.itdt.mobile.sample.order.bean.response.CourseworkResponse;
 import ru.itdt.mobile.sample.order.bean.response.ErrorResponse;
 import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.service.DistributionService;
@@ -20,8 +23,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-@SecurityScheme(securitySchemeName = "userJwtTokenAuth", description = "Аутентификация обычного пользователя",
-        type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @Path("/")
 public class DistributionController {
 
@@ -34,16 +35,14 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Сохранить студента")
     @APIResponses({
-            @APIResponse(description = "Студент сохранён", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Студент сохранён", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentShort.class))),
+            @APIResponse(description = "Ошибка при сохрании студента",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response saveStudent(@RequestBody(
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaveUserPostRequest.class))) final SaveUserPostRequest saveUserPostRequest,
-                                @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                                @Context final SecurityContext sc) {
-        return Response.ok(distributionService.saveStudent(saveUserPostRequest)).build();
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserPostRequest.class))) final RegisterUserPostRequest registerUserPostRequest) {
+        return Response.ok(distributionService.saveStudent(registerUserPostRequest)).build();
     }
 
     @POST
@@ -52,14 +51,15 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Сохранить преподавателя")
     @APIResponses({
-            @APIResponse(description = "Преподаватель сохранён", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Преподаватель сохранён", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherShort.class))),
+            @APIResponse(description = "Ошибка при сохрании преподавателя",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response saveTeacher(@RequestBody(
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaveUserPostRequest.class))) final SaveUserPostRequest saveUserPostRequest) {
-        return Response.ok(distributionService.saveTeacher(saveUserPostRequest)).build();
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterUserPostRequest.class))) final RegisterUserPostRequest registerUserPostRequest) {
+        return Response.ok(distributionService.saveTeacher(registerUserPostRequest)).build();
     }
 
     @POST
@@ -68,9 +68,10 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Сохранить предпочтение")
     @APIResponses({
-            @APIResponse(description = "Предпочтение сохранено", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Предпочтение сохранено", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Preference.class))),
+            @APIResponse(description = "Ошибка при сохрании предпочтения",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response savePreference(@RequestBody(
@@ -84,9 +85,10 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Сохранить курсовую")
     @APIResponses({
-            @APIResponse(description = "Курсовая сохранена", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Курсовая сохранена", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkShort.class))),
+            @APIResponse(description = "Ошибка при сохрании курсовой",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response saveCoursework(@RequestBody(
@@ -98,11 +100,11 @@ public class DistributionController {
     @Path("/student/{studentId}/coursework")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить курсовую")
+    @Operation(description = "Изменить список выбранных студентом курсовых")
     @APIResponses({
-            @APIResponse(description = "Курсовая сохранена", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Список выбранных курсовых изменён", responseCode = "200"),
+            @APIResponse(description = "Ошибка при обновлении списка выбранных курсовых",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response updateCourseworkForStudent(@RequestBody(
@@ -135,11 +137,12 @@ public class DistributionController {
     @Path("/authStudent")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Авторизация студента")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Студент авторизован", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthStudentResponse.class))),
+            @APIResponse(description = "Ошибка при авторизации",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response authStudent(@RequestBody(
@@ -151,11 +154,12 @@ public class DistributionController {
     @Path("/authTeacher")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
+    @Operation(description = "Авторизация преподавателя")
     @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Преподаватель авторизован", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherShort.class))),
+            @APIResponse(description = "Ошибка при авторизации",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response authTeacher(@RequestBody(
@@ -169,14 +173,10 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Обновить предпочтительного руководителя для студента")
     @APIResponses({
-            @APIResponse(description = "Адрес доставки обновлён",
-                    responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
-            @APIResponse(description = "Неудачный результат обновления, так как адреса с таким id не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Предпочтительный руководителя для студента обновлён",
+                    responseCode = "200"),
+            @APIResponse(description = "Ошибка при обновлении",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response updatePreferredTeacherForStudent(@PathParam("studentId") final long studentId, @PathParam("teacherId") final long teacherId) {
@@ -192,19 +192,15 @@ public class DistributionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Обновить предпочтения для студента")
     @APIResponses({
-            @APIResponse(description = "Адрес доставки обновлён",
+            @APIResponse(description = "Предпочтения для студента обновлены",
                     responseCode = "200",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdatePreferencesRequest.class))),
-            @APIResponse(description = "Неудачный результат обновления, так как адреса с таким id не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Ошибка при обновлении",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response updatePreferencesForStudent(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdatePreferencesRequest.class))) final UpdatePreferencesRequest updatePreferencesRequest, @PathParam("studentId") final long studentId) {
-
         distributionService.updatePreferencesForStudent(updatePreferencesRequest.getPreferences(), studentId);
         return Response
                 .ok()
@@ -215,21 +211,17 @@ public class DistributionController {
     @Path("/coursework/{courseworkId}/preferences")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Обновить предпочтения для студента")
+    @Operation(description = "Обновить предпочтения для курсовой работы")
     @APIResponses({
-            @APIResponse(description = "Адрес доставки обновлён",
+            @APIResponse(description = "Предпочтения для курсовой работы обновлены",
                     responseCode = "200",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdatePreferencesRequest.class))),
-            @APIResponse(description = "Неудачный результат обновления, так как адреса с таким id не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Ошибка при обновлении",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response updatePreferencesForCoursework(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdatePreferencesRequest.class))) final UpdatePreferencesRequest updatePreferencesRequest, @PathParam("courseworkId") final long courseworkId) {
-
         distributionService.updatePreferencesForCoursework(updatePreferencesRequest.getPreferences(), courseworkId);
         return Response
                 .ok()
@@ -237,38 +229,30 @@ public class DistributionController {
     }
 
 
-
     @GET
     @Path("/teachers")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить список всех преподавателей")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Список преподавателей получен", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherShort.class))),
+            @APIResponse(description = "Ошибка при попытке получить список преподавателей",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public Response getAllTeachers(@Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                                   @Context final SecurityContext sc) {
+    public Response getAllTeachers() {
         return Response.ok(distributionService.getAllTeachers()).build();
     }
 
     @GET
     @Path("/teacher/{teacherId}/courseworks")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить список курсовых работ, принадлежащих преподавателю")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Список курсовых работ получен", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkShort.class))),
+            @APIResponse(description = "Ошибка при попытке получить список курсовых работ преподавателя",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response getCourseworksForTeachers(@PathParam("teacherId") final long teacherId) {
@@ -278,15 +262,12 @@ public class DistributionController {
     @GET
     @Path("/coursework/{courseworkId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить курсовую работу")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Курсовая работа получена", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkResponse.class))),
+            @APIResponse(description = "Ошибка при попытке получить курсовую работу",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response getCoursework(@PathParam("courseworkId") final long courseworkId) {
@@ -296,15 +277,12 @@ public class DistributionController {
     @GET
     @Path("/students")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить список всех студентов")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TeacherDTO.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Список студентов получен", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentShort.class))),
+            @APIResponse(description = "Ошибка при попытке получить список студентов",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response getAllStudents(@Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
@@ -315,15 +293,12 @@ public class DistributionController {
     @GET
     @Path("/preferences")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить список всех предпочтений")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
+            @APIResponse(description = "Список предпочтений получен", responseCode = "200",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Preference.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Ошибка при попытке получить список предпочтений",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response getAllPreferences() {
@@ -331,20 +306,17 @@ public class DistributionController {
     }
 
     @GET
-    @Path("/allCoursework")
+    @Path("/courseworks")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить список всех курсовых работ")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Preference.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Список курсовых работ получен", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkResponse.class))),
+            @APIResponse(description = "Ошибка при попытке получить список курсовых работ",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public Response getAllCoursework() {
+    public Response getCourseworks() {
         return Response.ok(distributionService.getAllCoursework()).build();
     }
 
@@ -352,15 +324,12 @@ public class DistributionController {
     @GET
     @Path("/distribution")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Получить всех учителей")
+    @Operation(description = "Получить распределение курсовых работ по студентам")
     @APIResponses({
-            @APIResponse(description = "Учителя получены", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Preference.class))),
-            @APIResponse(description = "Не удалось получить, так как заказа с таким id у данного пользователя не существует",
-                    responseCode = "404",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
+            @APIResponse(description = "Распределение курсовых работ по студентам получено", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PairStudentCoursework.class))),
+            @APIResponse(description = "Ошибка при получении распределения курсовых работ по студентам",
+                    responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response getResultDistribution() {

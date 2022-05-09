@@ -13,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateCourseworkForStudentRequest {
-    @Schema(implementation = UpdateCourseworkForStudentRequest.class, description = "Предпочтения")
+    @Schema(description = "id курсовых работ, которыми студент хочет заниматься")
     private List<Long> selected;
+    @Schema(description = "id курсовых работ, которыми студент не хочет заниматься")
     private List<Long> unselected;
 }

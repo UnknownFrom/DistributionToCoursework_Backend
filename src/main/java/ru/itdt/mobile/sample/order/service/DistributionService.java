@@ -4,12 +4,15 @@ import ru.itdt.mobile.sample.order.bean.*;
 import ru.itdt.mobile.sample.order.bean.request.*;
 import ru.itdt.mobile.sample.order.bean.response.AuthStudentResponse;
 import ru.itdt.mobile.sample.order.bean.response.CourseworkResponse;
-import ru.itdt.mobile.sample.order.bean.response.TeacherResponse;
+import ru.itdt.mobile.sample.order.bean.TeacherShort;
 import ru.itdt.mobile.sample.order.domain.Coursework;
 import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.domain.Student;
 import ru.itdt.mobile.sample.order.domain.Teacher;
-import ru.itdt.mobile.sample.order.exception.ShopOrderNotExistException;
+import ru.itdt.mobile.sample.order.exception.AuthException;
+import ru.itdt.mobile.sample.order.exception.GetException;
+import ru.itdt.mobile.sample.order.exception.SaveException;
+import ru.itdt.mobile.sample.order.exception.UpdateException;
 import ru.itdt.mobile.sample.order.mapper.*;
 import ru.itdt.mobile.sample.order.repository.CourseworkRepository;
 import ru.itdt.mobile.sample.order.repository.PreferenceRepository;
@@ -43,64 +46,87 @@ public class DistributionService {
     @Inject
     DistributionMapper distributionMapper;
 
-    public AuthStudentResponse saveStudent(final SaveUserPostRequest saveUserPostRequest) {
+    public StudentShort saveStudent(RegisterUserPostRequest request) {
         try {
-            Student student = studentMapper.mapRequestToEntity(saveUserPostRequest);
-            return studentMapper.mapEntityToResponse(studentRepository.save(student));
+            if (request.getLogin().isEmpty() || request.getPassword().isEmpty()) {
+                throw new SaveException("Поле логин или пароль пустое");
+            }
+            Student student = studentMapper.mapRequestToEntity(request);
+            return studentMapper.mapEntityToShort(studentRepository.save(student));
+        } catch (SaveException e) {
+            throw new SaveException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new SaveException("Не удалось сохранить студента");
         }
     }
 
-    public Teacher saveTeacher(final SaveUserPostRequest saveUserPostRequest) {
+    public TeacherShort saveTeacher(RegisterUserPostRequest request) {
         try {
-            Teacher teacher = teacherMapper.mapRequestToEntity(saveUserPostRequest);
-            return teacherRepository.save(teacher);
+            if (request.getLogin().isEmpty() || request.getPassword().isEmpty()) {
+                throw new SaveException("Поле логин или пароль пустое");
+            }
+            Teacher teacher = teacherMapper.mapRequestToEntity(request);
+            return teacherMapper.mapEntityToShort(teacherRepository.save(teacher));
+        } catch (SaveException e) {
+            throw new SaveException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new SaveException("Не удалось сохранить преподавателя");
         }
     }
 
-    public Coursework saveCoursework(final CourseworkPostRequest courseworkPostRequest) {
+    public CourseworkShort saveCoursework(final CourseworkPostRequest courseworkPostRequest) {
         try {
             Teacher teacher = teacherRepository.findById(courseworkPostRequest.getTeacherId());
+            if (teacher == null) {
+                throw new SaveException("Не удалось сохранить курсовую работу, так как не найден преподаватель с id=" + courseworkPostRequest.getTeacherId());
+            }
             CourseworkDTO courseworkDTO = courseworkMapper.mapRequestToDTO(courseworkPostRequest, teacher);
             Coursework coursework = courseworkMapper.mapDTOToEntity(courseworkDTO);
-            return courseworkRepository.save(coursework);
+            return courseworkMapper.mapEntityToShort(courseworkRepository.save(coursework));
+        } catch (SaveException e) {
+            throw new SaveException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new SaveException("Не удалось сохранить курсовой проект");
         }
     }
 
     public Preference savePreference(final PreferencePostRequest preferencePostRequest) {
         try {
             if (preferencePostRequest.getName().isEmpty()) {
-                throw new Exception();
+                throw new SaveException("Не передано название предпочтения");
             }
             Preference preference = preferenceMapper.mapToEntity(preferencePostRequest);
             return preferenceRepository.save(preference);
+        } catch (SaveException e) {
+            throw new SaveException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new SaveException("Не удалось сохранить предпочтение");
         }
     }
 
     public AuthStudentResponse authStudent(final AuthPostRequest authPostRequest) {
         try {
             return studentMapper.mapEntityToResponse(studentRepository.findByLoginAndPassword(authPostRequest.getLogin(), authPostRequest.getPassword()));
+        } catch (AuthException e) {
+            throw new AuthException(e.getMessage());
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            throw new AuthException("Ошибка при авторизации");
         }
     }
 
-    public TeacherResponse authTeacher(final AuthPostRequest authPostRequest) {
+    public TeacherShort authTeacher(final AuthPostRequest authPostRequest) {
         try {
-            return teacherMapper.mapEntityToResponse(teacherRepository.findByLoginAndPassword(authPostRequest.getLogin(), authPostRequest.getPassword()));
+            return teacherMapper.mapEntityToShort(teacherRepository.findByLoginAndPassword(authPostRequest.getLogin(), authPostRequest.getPassword()));
+        } catch (AuthException e) {
+            throw new AuthException(e.getMessage());
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            throw new AuthException("Ошибка при авторизации");
         }
     }
 
@@ -112,7 +138,8 @@ public class DistributionService {
                     .map(courseworkMapper::mapEntityToShort)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить курсовые, принадлежащие преподавателю с id=" + teacherId);
         }
     }
 
@@ -120,85 +147,136 @@ public class DistributionService {
         try {
             return courseworkMapper.mapEntityToResponse(courseworkRepository.findById(courseworkId));
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить курсовую с id=" + courseworkId);
         }
     }
 
     public void updatePreferredTeacherForStudent(long studentId, long teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId);
-        studentRepository.updateStudentPreferredTeacher(studentId, teacher);
+        try {
+            Teacher teacher = teacherRepository.findById(teacherId);
+            studentRepository.updateStudentPreferredTeacher(studentId, teacher);
+        } catch (UpdateException e) {
+            throw new UpdateException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("Ошибка при попытке обновить предпочтительного преподавателя для студента с id=" + studentId);
+        }
     }
+
     public void updateCourseworkForStudent(UpdateCourseworkForStudentRequest updateCourseworkForStudentRequest, long studentId) {
-        List<Coursework> selectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getSelected());
-        List<Coursework> unselectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getUnselected());
-        studentRepository.updateStudentSelectedCoursework(studentId, selectedCourseworkList);
-        studentRepository.updateStudentUnselectedCoursework(studentId, unselectedCourseworkList);
+        try {
+            List<Coursework> selectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getSelected());
+            List<Coursework> unselectedCourseworkList = courseworkRepository.getCourseworkList(updateCourseworkForStudentRequest.getUnselected());
+            studentRepository.updateStudentSelectedCoursework(studentId, selectedCourseworkList);
+            studentRepository.updateStudentUnselectedCoursework(studentId, unselectedCourseworkList);
+        } catch (UpdateException e) {
+            throw new UpdateException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("Ошибка при попытке обновить выбор курсовых для студента с id=" + studentId);
+        }
     }
 
     public void updatePreferencesForStudent(List<Preference> preferences, long studentId) {
-        studentRepository.updateStudentPreferences(studentId, preferences);
+        try {
+            studentRepository.updateStudentPreferences(studentId, preferences);
+        } catch (UpdateException e) {
+            throw new UpdateException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("Ошибка при попытке обновить предпочтения для студента с id=" + studentId);
+        }
     }
 
     public void updatePreferencesForCoursework(List<Preference> preferences, long courseworkId) {
-        courseworkRepository.updateCourseworkPreferences(courseworkId, preferences);
+        try {
+            courseworkRepository.updateCourseworkPreferences(courseworkId, preferences);
+        } catch (UpdateException e) {
+            throw new UpdateException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UpdateException("Ошибка при попытке обновить предпочтения для курсовой с id=" + courseworkId);
+        }
     }
 
-    public List<AuthStudentResponse> getAllStudents() {
-        List<AuthStudentResponse> responseList;
-        List<Student> students = studentRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
-        responseList = students.stream().map(studentMapper::mapEntityToResponse).collect(Collectors.toList());
-        return responseList;
+    public List<StudentShort> getAllStudents() {
+        try {
+            List<StudentShort> responseList;
+            List<Student> students = studentRepository.findAll()
+                    .stream()
+                    .collect(Collectors.toList());
+            responseList = students
+                    .stream()
+                    .map(studentMapper::mapEntityToShort)
+                    .collect(Collectors.toList());
+            return responseList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить всех студентов");
+        }
     }
 
-    public List<TeacherResponse> getAllTeachers() {
-        return teacherRepository.findAll()
-                .stream()
-                .map(teacherMapper::mapEntityToResponse)
-                .collect(Collectors.toList());
+    public List<TeacherShort> getAllTeachers() {
+        try {
+            return teacherRepository.findAll()
+                    .stream()
+                    .map(teacherMapper::mapEntityToShort)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить всех преподавателей");
+        }
     }
 
     public List<Preference> getAllPreferences() {
-        return preferenceRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
+        try {
+            return preferenceRepository.findAll()
+                    .stream()
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить всех предпочтений");
+        }
     }
 
     public List<CourseworkResponse> getAllCoursework() {
-        List<CourseworkResponse> responseList;
-        List<Coursework> students = courseworkRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
-        responseList = students.stream().map(courseworkMapper::mapEntityToResponse).collect(Collectors.toList());
-        return responseList;
-    }
-
-    public void checkAccess(long orderId, long userId) {
-        Student student = studentRepository.findById(orderId);
-        if (student == null) {
-            throw new ShopOrderNotExistException(String.format("Заказа с id=%d не существует", orderId));
+        try {
+            List<CourseworkResponse> responseList;
+            List<Coursework> students = courseworkRepository.findAll()
+                    .stream()
+                    .collect(Collectors.toList());
+            responseList = students.stream().map(courseworkMapper::mapEntityToResponse).collect(Collectors.toList());
+            return responseList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить всех курсовых работ");
         }
     }
 
     public List<PairStudentCoursework> getResultDistribution() {
-        List<Student> students = studentRepository.listAll();
-        List<Coursework> courseworks = courseworkRepository.listAll();
-        List<Integer> result = DistributorService.ToDistribute(students, courseworks);
-        List<StudentShort> studentShorts = students
-                .stream()
-                .map(studentMapper::mapEntityToShort)
-                .collect(Collectors.toList());
-        List<CourseworkShort> courseworkShorts = courseworks
-                .stream()
-                .map(courseworkMapper::mapEntityToShort)
-                .collect(Collectors.toList());
-        List<PairStudentCoursework> pairStudentCourseworks = new ArrayList<>();
-        for (int i = 0; i < result.size(); i++) {
-            pairStudentCourseworks.add(distributionMapper
-                    .mapToPair(studentShorts.get(i), courseworkShorts.get(result.get(i))));
+        try {
+            List<Student> students = studentRepository.listAll();
+            List<Coursework> courseworks = courseworkRepository.listAll();
+            List<Integer> result = DistributorService.ToDistribute(students, courseworks);
+            List<StudentShort> studentShorts = students
+                    .stream()
+                    .map(studentMapper::mapEntityToShort)
+                    .collect(Collectors.toList());
+            List<CourseworkShort> courseworkShorts = courseworks
+                    .stream()
+                    .map(courseworkMapper::mapEntityToShort)
+                    .collect(Collectors.toList());
+            List<PairStudentCoursework> pairStudentCourseworks = new ArrayList<>();
+            for (int i = 0; i < result.size(); i++) {
+                pairStudentCourseworks.add(distributionMapper
+                        .mapToPair(studentShorts.get(i), courseworkShorts.get(result.get(i))));
+            }
+            return pairStudentCourseworks;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GetException("Ошибка при попытке получить результат распределения курсовых работ по студентам");
         }
-        return pairStudentCourseworks;
     }
 
     /*public List<PairStudentCoursework> test() {

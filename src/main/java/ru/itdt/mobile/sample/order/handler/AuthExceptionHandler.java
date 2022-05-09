@@ -1,7 +1,7 @@
 package ru.itdt.mobile.sample.order.handler;
 
 import ru.itdt.mobile.sample.order.bean.response.ErrorResponse;
-import ru.itdt.mobile.sample.order.exception.OrderItemNotExistException;
+import ru.itdt.mobile.sample.order.exception.AuthException;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -11,9 +11,9 @@ import javax.ws.rs.ext.Provider;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @Provider
-public class OrderItemNotExistExceptionHandler implements ExceptionMapper<OrderItemNotExistException> {
+public class AuthExceptionHandler implements ExceptionMapper<AuthException> {
     @Override
-    public Response toResponse(OrderItemNotExistException exception) {
+    public Response toResponse(AuthException exception) {
         return Response
                 .status(NOT_FOUND)
                 .entity(new ErrorResponse(NOT_FOUND.getStatusCode(), exception.getMessage()))

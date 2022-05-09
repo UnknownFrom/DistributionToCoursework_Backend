@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import ru.itdt.mobile.sample.order.bean.response.TeacherResponse;
 
 @Data
 @AllArgsConstructor

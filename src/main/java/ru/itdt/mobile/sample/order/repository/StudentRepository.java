@@ -5,6 +5,9 @@ import ru.itdt.mobile.sample.order.domain.Coursework;
 import ru.itdt.mobile.sample.order.domain.Preference;
 import ru.itdt.mobile.sample.order.domain.Student;
 import ru.itdt.mobile.sample.order.domain.Teacher;
+import ru.itdt.mobile.sample.order.exception.AuthException;
+import ru.itdt.mobile.sample.order.exception.SaveException;
+import ru.itdt.mobile.sample.order.exception.UpdateException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -17,7 +20,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     @Transactional
     public Student save(Student student) {
         if (student == null) {
-            throw new IllegalArgumentException("Передан null вместо сущности");
+            throw new SaveException("Передан null вместо сущности");
         }
         persist(student);
         return student;
@@ -27,7 +30,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     public void updateStudentPreferredTeacher(long studentId, Teacher teacher) {
         Student student = findById(studentId);
         if (student == null) {
-            throw new IllegalArgumentException(String.format("Студент с id=%d не существует", studentId));
+            throw new UpdateException(String.format("Студент с id=%d не существует", studentId));
         }
         student.setTeacher(teacher);
         persist(student);
@@ -37,7 +40,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     public void updateStudentSelectedCoursework(long studentId, List<Coursework> courseworkList) {
         Student student = findById(studentId);
         if (student == null) {
-            throw new IllegalArgumentException(String.format("Студент с id=%d не существует", studentId));
+            throw new UpdateException(String.format("Студент с id=%d не существует", studentId));
         }
         student.setSelectedCoursework(courseworkList);
         persist(student);
@@ -47,7 +50,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     public void updateStudentUnselectedCoursework(long studentId, List<Coursework> courseworkList) {
         Student student = findById(studentId);
         if (student == null) {
-            throw new IllegalArgumentException(String.format("Студент с id=%d не существует", studentId));
+            throw new UpdateException(String.format("Студент с id=%d не существует", studentId));
         }
         student.setUnselectedCoursework(courseworkList);
         persist(student);
@@ -57,7 +60,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     public void updateStudentPreferences(long studentId, List<Preference> preferences) {
         Student student = findById(studentId);
         if (student == null) {
-            throw new IllegalArgumentException(String.format("Студент с id=%d не существует", studentId));
+            throw new UpdateException(String.format("Студент с id=%d не существует", studentId));
         }
         List<Preference> preferenceList = student.getPreferences();
         preferenceList.addAll(preferences);
@@ -68,7 +71,7 @@ public class StudentRepository implements PanacheRepository<Student> {
     public Student findByLoginAndPassword(String login, String password) {
         Optional<Student> result = find("login = ?1 and password = ?2", login, password).firstResultOptional();
         if (result.isEmpty()){
-            throw new IllegalArgumentException("Студент с такими данными не существует");
+            throw new AuthException("Студент с такими данными не существует");
         }
         return result.get();
     }

@@ -4,10 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itdt.mobile.sample.order.domain.Preference;
-import ru.itdt.mobile.sample.order.domain.Teacher;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +12,5 @@ import java.util.List;
 public class PairStudentCoursework {
     private StudentShort student;
     private CourseworkShort coursework;
+    private Integer score;
 }

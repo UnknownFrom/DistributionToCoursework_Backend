@@ -258,7 +258,8 @@ public class DistributionService {
         try {
             List<Student> students = studentRepository.listAll();
             List<Coursework> courseworks = courseworkRepository.listAll();
-            List<Integer> result = DistributorService.ToDistribute(students, courseworks);
+            List<List<Integer>> matrix = DistributorService.CreateMatrix(students, courseworks);
+            List<Integer> result = DistributorService.ToDistribute(matrix);
             List<StudentShort> studentShorts = students
                     .stream()
                     .map(studentMapper::mapEntityToShort)
@@ -271,6 +272,7 @@ public class DistributionService {
             for (int i = 0; i < result.size(); i++) {
                 pairStudentCourseworks.add(distributionMapper
                         .mapToPair(studentShorts.get(i), courseworkShorts.get(result.get(i))));
+                pairStudentCourseworks.get(i).setScore(matrix.get(i).get(result.get(i)));
             }
             return pairStudentCourseworks;
         } catch (Exception e) {

@@ -30,16 +30,9 @@ public class DistributorService {
     /// </summary>
     /// <param name="students"></param>
     /// <param name="courseworks"></param>
-    public static List<Integer> ToDistribute(List<Student> students, List<Coursework> courseworks) {
-        List<List<Integer>> matrix = CreateMatrix(students, courseworks);
+    public static List<Integer> ToDistribute(List<List<Integer>> matrix) {
         List<Integer> courseworkForStudent = Distributor.VengrAlgorithm(matrix);
         return courseworkForStudent;
-        /*for (int i = 0; i < students.size(); i++)
-        {
-            students[i].coursework = courseworks[courseworkForStudent[i]];
-            students[i].scoreForCoursework = matrix[i][courseworkForStudent[i]];
-
-        }*/
     }
 
     /// <summary>
@@ -48,7 +41,7 @@ public class DistributorService {
     /// <param name="students"></param>
     /// <param name="courseworks"></param>
     /// <returns></returns>
-    private static List<List<Integer>> CreateMatrix(List<Student> students, List<Coursework> courseworks) {
+    public static List<List<Integer>> CreateMatrix(List<Student> students, List<Coursework> courseworks) {
         List<List<Integer>> matrix = new ArrayList<>();
 
         for (Student student : students) {

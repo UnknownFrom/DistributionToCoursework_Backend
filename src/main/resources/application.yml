@@ -17,13 +17,6 @@ quarkus:
   http:
     port: 8080
 
-mp:
-  jwt:
-    verify:
-      publickey:
-        location: /home/pavel/ITDT/itdt/idea/ident/src/test/resources/publicKey.pem
-      issuer: mobile-auth-service
-
 '%dev':
   quarkus:
     http:

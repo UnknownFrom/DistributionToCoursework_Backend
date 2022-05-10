@@ -46,17 +46,18 @@ CREATE TABLE public.preference
 
 CREATE TABLE public.student_preference
 (
-    preference_id bigint,
     student_id    bigint,
+    preference_id bigint,
     CONSTRAINT student_preference_pk PRIMARY KEY (preference_id, student_id),
-    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
-        REFERENCES public.preference (id) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
     CONSTRAINT student_id_fk FOREIGN KEY (student_id)
         REFERENCES public.student (id) MATCH SIMPLE
         ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
+        REFERENCES public.preference (id) MATCH SIMPLE
+        ON UPDATE CASCADE
         ON DELETE CASCADE
+
 );
 
 CREATE TABLE public.student_coursework_selected
@@ -91,15 +92,15 @@ CREATE TABLE public.student_coursework_unselected
 
 CREATE TABLE public.coursework_preference
 (
-    preference_id bigint,
     coursework_id bigint,
+    preference_id bigint,
     CONSTRAINT coursework_preference_pk PRIMARY KEY (preference_id, coursework_id),
-    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
-        REFERENCES public.preference (id) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE CASCADE,
     CONSTRAINT coursework_id_fk FOREIGN KEY (coursework_id)
         REFERENCES public.coursework (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT preference_id_fk FOREIGN KEY (preference_id)
+        REFERENCES public.preference (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );

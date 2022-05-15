@@ -15,15 +15,10 @@ import ru.vyatsu.pavel.distribution.domain.Teacher;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CourseworkMapper {
     Coursework mapDTOToEntity(CourseworkDTO courseworkDTO);
-    CourseworkDTO mapToDTO(Coursework coursework);
     CourseworkResponse mapEntityToResponse(Coursework coursework);
     @Mappings({
         @Mapping(target = "name", source = "courseworkPostRequest.name"),
     })
     CourseworkDTO mapRequestToDTO(CourseworkPostRequest courseworkPostRequest, Teacher teacher);
-    @Mappings({
-            @Mapping(target = "name", source = "courseworkPostRequest.name"),
-    })
-    Coursework mapRequestToEntity(CourseworkPostRequest courseworkPostRequest, Teacher teacher);
     CourseworkShort mapEntityToShort(Coursework coursework);
 }

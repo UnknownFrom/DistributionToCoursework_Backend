@@ -242,6 +242,9 @@ public class DistributionService {
         try {
             List<Student> students = studentRepository.listAll();
             List<Coursework> courseworks = courseworkRepository.listAll();
+            if (students.size() > courseworks.size()){
+                throw new GetException("Не удалось получить распределение курсовых, так как студентов больше, чем курсовых работ");
+            }
             List<List<Integer>> matrix = DistributorService.CreateMatrix(students, courseworks);
             List<Integer> result = DistributorService.ToDistribute(matrix);
             List<StudentShort> studentShorts = students

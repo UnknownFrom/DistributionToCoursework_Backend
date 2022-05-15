@@ -114,25 +114,6 @@ public class DistributionController {
         return Response.ok().build();
     }
 
-   /* @POST
-    @Path("/test")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Сохранить заказ")
-    @APIResponses({
-            @APIResponse(description = "Заказ сохранён", responseCode = "200"),
-            @APIResponse(description = "Некорректный токен",
-                    responseCode = "401",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public Response test(@RequestBody(
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PreferenceDTO.class))) final PreferenceDTO preferenceDTO,
-                         @Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                         @Context final SecurityContext sc) {
-        //distributionService.test();
-        return Response.ok(distributionService.test()).build();
-    }*/
-
     @POST
     @Path("/authStudent")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -285,8 +266,7 @@ public class DistributionController {
                     responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public Response getAllStudents(@Parameter(in = ParameterIn.HEADER, required = true, name = HttpHeaders.AUTHORIZATION)
-                                   @Context final SecurityContext sc) {
+    public Response getAllStudents() {
         return Response.ok(distributionService.getAllStudents()).build();
     }
 

@@ -1,11 +1,10 @@
-package ru.vyatsu.pavel.distribution.bean;
+package ru.vyatsu.pavel.distribution.bean.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.vyatsu.pavel.distribution.domain.Preference;
-import ru.vyatsu.pavel.distribution.domain.Teacher;
 
 import java.util.List;
 
@@ -13,9 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CourseworkDTO {
+public class UpdateCoursework {
+    private Long id;
     private String name;
     private String description;
     private List<Preference> preferences;
-    private Teacher teacher;
+    private Long teacherId;
 }

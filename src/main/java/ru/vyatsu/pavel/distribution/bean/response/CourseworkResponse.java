@@ -14,6 +14,7 @@ import java.util.List;
 public class CourseworkResponse {
     private Long id;
     private String name;
+    private String description;
     private List<Preference> preferences;
     private TeacherShort teacher;
 }

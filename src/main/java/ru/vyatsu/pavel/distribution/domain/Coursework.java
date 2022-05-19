@@ -18,6 +18,8 @@ public class Coursework {
     private Long id;
     @Column(name = "name")
     private String name;
+    @Column(name = "description")
+    private String description;
     @ManyToMany
     @JoinTable(name = "coursework_preference",
             joinColumns = {@JoinColumn(name = "coursework_id")},

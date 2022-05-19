@@ -25,9 +25,10 @@ CREATE TABLE public.student
 
 CREATE TABLE public.coursework
 (
-    id         bigint                 NOT NULL,
-    name       character varying(255) NOT NULL,
-    teacher_id bigint,
+    id          bigint                 NOT NULL,
+    name        character varying(255) NOT NULL,
+    description TEXT,
+    teacher_id  bigint,
     CONSTRAINT coursework_pk PRIMARY KEY (id),
     CONSTRAINT unique_coursework UNIQUE (name),
     CONSTRAINT teacher_id_fk FOREIGN KEY (teacher_id)
@@ -38,8 +39,8 @@ CREATE TABLE public.coursework
 
 CREATE TABLE public.preference
 (
-    id            bigint                 NOT NULL,
-    name          character varying(255) NOT NULL,
+    id   bigint                 NOT NULL,
+    name character varying(255) NOT NULL,
     CONSTRAINT preference_pk PRIMARY KEY (id),
     CONSTRAINT unique_preference UNIQUE (name)
 );

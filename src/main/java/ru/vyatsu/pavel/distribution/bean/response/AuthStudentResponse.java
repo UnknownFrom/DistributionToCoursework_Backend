@@ -16,7 +16,7 @@ public class AuthStudentResponse {
     private Long id;
     private String name;
     private List<Preference> preferences;
-    private List<CourseworkShort> selectedCoursework;
-    private List<CourseworkShort> unselectedCoursework;
+    private List<CourseworkResponse> selectedCoursework;
+    private List<CourseworkResponse> unselectedCoursework;
     private TeacherShort teacher;
 }

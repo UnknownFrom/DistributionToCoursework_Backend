@@ -1,8 +1,10 @@
 package ru.vyatsu.pavel.distribution.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import ru.vyatsu.pavel.distribution.bean.request.UpdateCoursework;
 import ru.vyatsu.pavel.distribution.domain.Coursework;
 import ru.vyatsu.pavel.distribution.domain.Preference;
+import ru.vyatsu.pavel.distribution.domain.Teacher;
 import ru.vyatsu.pavel.distribution.exception.SaveException;
 import ru.vyatsu.pavel.distribution.exception.UpdateException;
 
@@ -33,6 +35,20 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
         preferenceList.addAll(preferences);
         coursework.setPreferences(preferences);
         persist(coursework);
+    }
+
+    @Transactional
+    public Coursework updateCoursework(UpdateCoursework updateCoursework, Teacher teacher) {
+        Coursework coursework = findById(updateCoursework.getId());
+        if (coursework == null) {
+            throw new UpdateException(String.format("Курсовая с id=%d не существует", updateCoursework.getId()));
+        }
+        coursework.setName(updateCoursework.getName());
+        coursework.setDescription(updateCoursework.getDescription());
+        coursework.setPreferences(updateCoursework.getPreferences());
+        coursework.setTeacher(teacher);
+        persist(coursework);
+        return coursework;
     }
 
     public List<Coursework> getCourseworkList(List<Long> courseworkId) {

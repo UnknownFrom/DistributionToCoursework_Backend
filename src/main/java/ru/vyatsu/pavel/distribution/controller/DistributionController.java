@@ -114,6 +114,23 @@ public class DistributionController {
         return Response.ok().build();
     }
 
+    @PUT
+    @Path("/coursework")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Изменить список выбранных студентом курсовых")
+    @APIResponses({
+            @APIResponse(description = "Список выбранных курсовых изменён", responseCode = "200"),
+            @APIResponse(description = "Ошибка при обновлении списка выбранных курсовых",
+                    responseCode = "40*",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response updateCoursework(@RequestBody(
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCoursework.class))) final UpdateCoursework updateCoursework) {
+        //distributionService.updateCoursework(updateCoursework);
+        return Response.ok(distributionService.updateCoursework(updateCoursework)).build();
+    }
+
     @POST
     @Path("/authStudent")
     @Consumes(MediaType.APPLICATION_JSON)

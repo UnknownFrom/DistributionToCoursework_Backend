@@ -168,6 +168,17 @@ public class DistributionService {
         }
     }
 
+    public CourseworkResponse updateCoursework(UpdateCoursework coursework) {
+        try {
+            Teacher teacher = teacherRepository.findById(coursework.getTeacherId());
+            return courseworkMapper.mapEntityToResponse(courseworkRepository.updateCoursework(coursework, teacher));
+        } catch (UpdateException e) {
+            throw new UpdateException(e.getMessage());
+        } catch (Exception e) {
+            throw new UpdateException("Ошибка при попытке обновить курсовую с id=" + coursework.getId());
+        }
+    }
+
     public void updatePreferencesForStudent(List<Preference> preferences, long studentId) {
         try {
             studentRepository.updateStudentPreferences(studentId, preferences);

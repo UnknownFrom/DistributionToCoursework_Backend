@@ -1,10 +1,8 @@
 package ru.vyatsu.pavel.distribution.controller;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -12,7 +10,7 @@ import ru.vyatsu.pavel.distribution.bean.CourseworkShort;
 import ru.vyatsu.pavel.distribution.bean.PairStudentCoursework;
 import ru.vyatsu.pavel.distribution.bean.StudentShort;
 import ru.vyatsu.pavel.distribution.bean.TeacherShort;
-import ru.vyatsu.pavel.distribution.bean.response.AuthStudentResponse;
+import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
 import ru.vyatsu.pavel.distribution.bean.response.CourseworkResponse;
 import ru.vyatsu.pavel.distribution.bean.response.ErrorResponse;
 import ru.vyatsu.pavel.distribution.domain.Preference;
@@ -118,16 +116,16 @@ public class DistributionController {
     @Path("/coursework")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(description = "Изменить список выбранных студентом курсовых")
+    @Operation(description = "Изменить данные курсовой")
     @APIResponses({
-            @APIResponse(description = "Список выбранных курсовых изменён", responseCode = "200"),
-            @APIResponse(description = "Ошибка при обновлении списка выбранных курсовых",
+            @APIResponse(description = "Данные курсовой изменены", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CourseworkResponse.class))),
+            @APIResponse(description = "Ошибка при изменении курсовой",
                     responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     public Response updateCoursework(@RequestBody(
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCoursework.class))) final UpdateCoursework updateCoursework) {
-        //distributionService.updateCoursework(updateCoursework);
         return Response.ok(distributionService.updateCoursework(updateCoursework)).build();
     }
 
@@ -138,7 +136,7 @@ public class DistributionController {
     @Operation(description = "Авторизация студента")
     @APIResponses({
             @APIResponse(description = "Студент авторизован", responseCode = "200",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthStudentResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentResponse.class))),
             @APIResponse(description = "Ошибка при авторизации",
                     responseCode = "40*",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -285,6 +283,21 @@ public class DistributionController {
     })
     public Response getAllStudents() {
         return Response.ok(distributionService.getAllStudents()).build();
+    }
+
+    @GET
+    @Path("/student/{studentId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Получить список всех студентов")
+    @APIResponses({
+            @APIResponse(description = "Список студентов получен", responseCode = "200",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StudentShort.class))),
+            @APIResponse(description = "Ошибка при попытке получить список студентов",
+                    responseCode = "40*",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Response getStudent( @PathParam("studentId") final long studentId) {
+        return Response.ok(distributionService.getStudent(studentId)).build();
     }
 
     @GET

@@ -1,6 +1,6 @@
 package ru.vyatsu.pavel.distribution.service;
 
-import ru.vyatsu.pavel.distribution.bean.response.AuthStudentResponse;
+import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
 import ru.vyatsu.pavel.distribution.bean.response.CourseworkResponse;
 import ru.vyatsu.pavel.distribution.bean.TeacherShort;
 import ru.vyatsu.pavel.distribution.domain.Coursework;
@@ -104,7 +104,7 @@ public class DistributionService {
         }
     }
 
-    public AuthStudentResponse authStudent(final AuthPostRequest authPostRequest) {
+    public StudentResponse authStudent(final AuthPostRequest authPostRequest) {
         try {
             return studentMapper.mapEntityToResponse(studentRepository.findByLoginAndPassword(authPostRequest.getLogin(), authPostRequest.getPassword()));
         } catch (AuthException e) {
@@ -212,6 +212,14 @@ public class DistributionService {
             return responseList;
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить всех студентов");
+        }
+    }
+
+    public StudentResponse getStudent(long studentId) {
+        try {
+            return studentMapper.mapEntityToResponse(studentRepository.findById(studentId));
+        } catch (Exception e) {
+            throw new GetException("Ошибка при попытке получить студента");
         }
     }
 

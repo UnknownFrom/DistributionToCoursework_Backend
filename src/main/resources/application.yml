@@ -16,6 +16,11 @@ quarkus:
       sql: false
   http:
     port: 8080
+    host: 192.168.1.113
+    cors:
+      origins: https://distribution-coursework.web.app
+      headers: accept, authorization, content-type, x-requested-with
+      methods: GET, OPTIONS, POST, PUT
 
 '%dev':
   quarkus:

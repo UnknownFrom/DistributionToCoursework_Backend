@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class PairStudentCoursework {
-    private StudentShort student;
+    private StudentResponse student;
     private CourseworkShort coursework;
     private Integer score;
 }

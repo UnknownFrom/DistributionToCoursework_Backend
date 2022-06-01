@@ -74,7 +74,7 @@ public class DistributionService {
         }
     }
 
-    public CourseworkShort saveCoursework(final CourseworkPostRequest courseworkPostRequest) {
+    public CourseworkResponse saveCoursework(final CourseworkPostRequest courseworkPostRequest) {
         try {
             Teacher teacher = teacherRepository.findById(courseworkPostRequest.getTeacherId());
             if (teacher == null) {
@@ -82,7 +82,7 @@ public class DistributionService {
             }
             CourseworkDTO courseworkDTO = courseworkMapper.mapRequestToDTO(courseworkPostRequest, teacher);
             Coursework coursework = courseworkMapper.mapDTOToEntity(courseworkDTO);
-            return courseworkMapper.mapEntityToShort(courseworkRepository.save(coursework));
+            return courseworkMapper.mapEntityToResponse(courseworkRepository.save(coursework));
         } catch (SaveException e) {
             throw new SaveException(e.getMessage());
         } catch (Exception e) {
@@ -199,7 +199,23 @@ public class DistributionService {
         }
     }
 
-    public List<StudentShort> getAllStudents() {
+    public List<StudentResponse> getAllStudents() {
+        try {
+            List<StudentResponse> responseList;
+            List<Student> students = studentRepository.findAll()
+                    .stream()
+                    .collect(Collectors.toList());
+            responseList = students
+                    .stream()
+                    .map(studentMapper::mapEntityToResponse)
+                    .collect(Collectors.toList());
+            return responseList;
+        } catch (Exception e) {
+            throw new GetException("Ошибка при попытке получить всех студентов");
+        }
+    }
+
+    public List<StudentShort> getAllStudentsShort() {
         try {
             List<StudentShort> responseList;
             List<Student> students = studentRepository.findAll()
@@ -266,9 +282,9 @@ public class DistributionService {
             }
             List<List<Integer>> matrix = DistributorService.CreateMatrix(students, courseworks);
             List<Integer> result = DistributorService.ToDistribute(matrix);
-            List<StudentShort> studentShorts = students
+            List<StudentResponse> studentShorts = students
                     .stream()
-                    .map(studentMapper::mapEntityToShort)
+                    .map(studentMapper::mapEntityToResponse)
                     .collect(Collectors.toList());
             List<CourseworkShort> courseworkShorts = courseworks
                     .stream()

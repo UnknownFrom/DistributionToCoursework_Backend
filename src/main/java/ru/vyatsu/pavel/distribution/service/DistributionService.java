@@ -1,8 +1,9 @@
 package ru.vyatsu.pavel.distribution.service;
 
-import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
+import ru.vyatsu.pavel.distribution.bean.*;
+import ru.vyatsu.pavel.distribution.bean.request.*;
 import ru.vyatsu.pavel.distribution.bean.response.CourseworkResponse;
-import ru.vyatsu.pavel.distribution.bean.TeacherShort;
+import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
 import ru.vyatsu.pavel.distribution.domain.Coursework;
 import ru.vyatsu.pavel.distribution.domain.Preference;
 import ru.vyatsu.pavel.distribution.domain.Student;
@@ -16,8 +17,6 @@ import ru.vyatsu.pavel.distribution.repository.CourseworkRepository;
 import ru.vyatsu.pavel.distribution.repository.PreferenceRepository;
 import ru.vyatsu.pavel.distribution.repository.StudentRepository;
 import ru.vyatsu.pavel.distribution.repository.TeacherRepository;
-import ru.vyatsu.pavel.distribution.bean.*;
-import ru.vyatsu.pavel.distribution.bean.request.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -127,10 +126,10 @@ public class DistributionService {
     public List<CourseworkShort> getCourseworkForTeacher(long teacherId) {
         try {
             return courseworkRepository
-                    .getCourseworkList(teacherId)
-                    .stream()
-                    .map(courseworkMapper::mapEntityToShort)
-                    .collect(Collectors.toList());
+                .getCourseworkList(teacherId)
+                .stream()
+                .map(courseworkMapper::mapEntityToShort)
+                .collect(Collectors.toList());
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить курсовые, принадлежащие преподавателю с id=" + teacherId);
         }
@@ -203,12 +202,12 @@ public class DistributionService {
         try {
             List<StudentResponse> responseList;
             List<Student> students = studentRepository.findAll()
-                    .stream()
-                    .collect(Collectors.toList());
+                .stream()
+                .collect(Collectors.toList());
             responseList = students
-                    .stream()
-                    .map(studentMapper::mapEntityToResponse)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(studentMapper::mapEntityToResponse)
+                .collect(Collectors.toList());
             return responseList;
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить всех студентов");
@@ -219,12 +218,12 @@ public class DistributionService {
         try {
             List<StudentShort> responseList;
             List<Student> students = studentRepository.findAll()
-                    .stream()
-                    .collect(Collectors.toList());
+                .stream()
+                .collect(Collectors.toList());
             responseList = students
-                    .stream()
-                    .map(studentMapper::mapEntityToShort)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(studentMapper::mapEntityToShort)
+                .collect(Collectors.toList());
             return responseList;
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить всех студентов");
@@ -242,9 +241,9 @@ public class DistributionService {
     public List<TeacherShort> getAllTeachers() {
         try {
             return teacherRepository.findAll()
-                    .stream()
-                    .map(teacherMapper::mapEntityToShort)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(teacherMapper::mapEntityToShort)
+                .collect(Collectors.toList());
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить всех преподавателей");
         }
@@ -253,8 +252,8 @@ public class DistributionService {
     public List<Preference> getAllPreferences() {
         try {
             return preferenceRepository.findAll()
-                    .stream()
-                    .collect(Collectors.toList());
+                .stream()
+                .collect(Collectors.toList());
         } catch (Exception e) {
             throw new GetException("Ошибка при попытке получить всех предпочтений");
         }
@@ -264,8 +263,8 @@ public class DistributionService {
         try {
             List<CourseworkResponse> responseList;
             List<Coursework> students = courseworkRepository.findAll()
-                    .stream()
-                    .collect(Collectors.toList());
+                .stream()
+                .collect(Collectors.toList());
             responseList = students.stream().map(courseworkMapper::mapEntityToResponse).collect(Collectors.toList());
             return responseList;
         } catch (Exception e) {
@@ -277,23 +276,23 @@ public class DistributionService {
         try {
             List<Student> students = studentRepository.listAll();
             List<Coursework> courseworks = courseworkRepository.listAll();
-            if (students.size() > courseworks.size()){
+            if (students.size() > courseworks.size()) {
                 throw new GetException("Не удалось получить распределение курсовых, так как студентов больше, чем курсовых работ");
             }
             List<List<Integer>> matrix = DistributorService.CreateMatrix(students, courseworks);
             List<Integer> result = DistributorService.ToDistribute(matrix);
             List<StudentResponse> studentShorts = students
-                    .stream()
-                    .map(studentMapper::mapEntityToResponse)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(studentMapper::mapEntityToResponse)
+                .collect(Collectors.toList());
             List<CourseworkShort> courseworkShorts = courseworks
-                    .stream()
-                    .map(courseworkMapper::mapEntityToShort)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(courseworkMapper::mapEntityToShort)
+                .collect(Collectors.toList());
             List<PairStudentCoursework> pairStudentCourseworks = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
                 pairStudentCourseworks.add(distributionMapper
-                        .mapToPair(studentShorts.get(i), courseworkShorts.get(result.get(i))));
+                    .mapToPair(studentShorts.get(i), courseworkShorts.get(result.get(i))));
                 pairStudentCourseworks.get(i).setScore(matrix.get(i).get(result.get(i)));
             }
             return pairStudentCourseworks;

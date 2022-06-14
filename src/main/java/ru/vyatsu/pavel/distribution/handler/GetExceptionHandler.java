@@ -15,9 +15,9 @@ public class GetExceptionHandler implements ExceptionMapper<GetException> {
     @Override
     public Response toResponse(GetException exception) {
         return Response
-                .status(NOT_FOUND)
-                .entity(new ErrorResponse(NOT_FOUND.getStatusCode(), exception.getMessage()))
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
+            .status(NOT_FOUND)
+            .entity(new ErrorResponse(NOT_FOUND.getStatusCode(), exception.getMessage()))
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .build();
     }
 }

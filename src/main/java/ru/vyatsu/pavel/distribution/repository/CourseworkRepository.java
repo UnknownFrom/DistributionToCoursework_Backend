@@ -53,9 +53,9 @@ public class CourseworkRepository implements PanacheRepository<Coursework> {
 
     public List<Coursework> getCourseworkList(List<Long> courseworkId) {
         return courseworkId
-                .stream()
-                .map(this::findById)
-                .collect(Collectors.toList());
+            .stream()
+            .map(this::findById)
+            .collect(Collectors.toList());
     }
 
     public List<Coursework> getCourseworkList(long teacherId) {

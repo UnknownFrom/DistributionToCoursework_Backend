@@ -70,7 +70,7 @@ public class StudentRepository implements PanacheRepository<Student> {
 
     public Student findByLoginAndPassword(String login, String password) {
         Optional<Student> result = find("login = ?1 and password = ?2", login, password).firstResultOptional();
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             throw new AuthException("Студент с такими данными не существует");
         }
         return result.get();

@@ -19,7 +19,6 @@ public class DistributorService {
     private static Integer scoreForCoursework(Student student, Coursework coursework) {
         int score = 0;
         score += scoreForSupervisor(student, coursework);
-        //score += scoreForCompetencies(student, coursework);
         score += scoreForPreferences(student, coursework);
         score += scoreForChoice(student, coursework);
         return score;
@@ -52,22 +51,6 @@ public class DistributorService {
         }
         return matrix;
     }
-
-    /*private static int scoreForCompetencies(Student student, Coursework coursework)
-    {
-        int score = 0;
-        if (coursework.getPreferences() != null && student.getPreferences() != null)
-        {
-            for (Preference preference : coursework.getPreferences())
-            {
-                if (student.getPreferences().contains(preference))
-                {
-                    score += Score.preference;
-                }
-            }
-        }
-        return score;
-    }*/
 
     private static int scoreForPreferences(Student student, Coursework coursework) {
         int score = 0;

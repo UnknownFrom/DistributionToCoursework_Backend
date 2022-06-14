@@ -12,13 +12,16 @@ import ru.vyatsu.pavel.distribution.domain.Coursework;
 import ru.vyatsu.pavel.distribution.domain.Teacher;
 
 @Mapper(componentModel = "cdi",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CourseworkMapper {
     Coursework mapDTOToEntity(CourseworkDTO courseworkDTO);
+
     CourseworkResponse mapEntityToResponse(Coursework coursework);
+
     @Mappings({
         @Mapping(target = "name", source = "courseworkPostRequest.name"),
     })
     CourseworkDTO mapRequestToDTO(CourseworkPostRequest courseworkPostRequest, Teacher teacher);
+
     CourseworkShort mapEntityToShort(Coursework coursework);
 }

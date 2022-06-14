@@ -15,5 +15,4 @@ public class RegisterUserPostRequest {
     private String login;
     @Schema(description = "Пароль", example = "password")
     private String password;
-
 }

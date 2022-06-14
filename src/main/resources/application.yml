@@ -2,7 +2,8 @@ quarkus:
   package:
     type: fast-jar
   swagger-ui:
-    always-include: true
+    always-include: false
+    enable: false
   datasource:
     db-kind: postgresql
     username: postgres

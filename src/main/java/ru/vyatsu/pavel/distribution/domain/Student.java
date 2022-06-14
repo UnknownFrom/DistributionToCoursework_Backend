@@ -14,7 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "student",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"login"})})
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"login"})})
 public class Student {
     @Id
     @SequenceGenerator(name = "student_id_seq", sequenceName = "student_id_seq", allocationSize = 1)
@@ -28,8 +28,8 @@ public class Student {
     private String password;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_preference",
-    joinColumns = {@JoinColumn(name = "student_id")},
-    inverseJoinColumns = {@JoinColumn(name = "preference_id")})
+        joinColumns = {@JoinColumn(name = "student_id")},
+        inverseJoinColumns = {@JoinColumn(name = "preference_id")})
     private List<Preference> preferences;
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
@@ -37,13 +37,13 @@ public class Student {
     private Teacher teacher;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_coursework_selected",
-            joinColumns = {@JoinColumn(name = "student_id")},
-            inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
+        joinColumns = {@JoinColumn(name = "student_id")},
+        inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
     private List<Coursework> selectedCoursework;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_coursework_unselected",
-            joinColumns = {@JoinColumn(name = "student_id")},
-            inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
+        joinColumns = {@JoinColumn(name = "student_id")},
+        inverseJoinColumns = {@JoinColumn(name = "coursework_id")})
     private List<Coursework> unselectedCoursework;
 
     @Override

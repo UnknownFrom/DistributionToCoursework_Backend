@@ -23,7 +23,7 @@ public class TeacherRepository implements PanacheRepository<Teacher> {
 
     public Teacher findByLoginAndPassword(String login, String password) {
         Optional<Teacher> result = find("login = ?1 and password = ?2", login, password).firstResultOptional();
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             throw new AuthException("Учителя с такими данными не существует");
         }
         return result.get();

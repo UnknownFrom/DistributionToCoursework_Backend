@@ -8,9 +8,11 @@ import ru.vyatsu.pavel.distribution.bean.response.StudentResponse;
 import ru.vyatsu.pavel.distribution.domain.Student;
 
 @Mapper(componentModel = "cdi",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface StudentMapper {
     Student mapRequestToEntity(RegisterUserPostRequest registerUserPostRequest);
+
     StudentResponse mapEntityToResponse(Student student);
+
     StudentShort mapEntityToShort(Student student);
 }

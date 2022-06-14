@@ -15,9 +15,9 @@ public class AuthExceptionHandler implements ExceptionMapper<AuthException> {
     @Override
     public Response toResponse(AuthException exception) {
         return Response
-                .status(NOT_FOUND)
-                .entity(new ErrorResponse(NOT_FOUND.getStatusCode(), exception.getMessage()))
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
+            .status(NOT_FOUND)
+            .entity(new ErrorResponse(NOT_FOUND.getStatusCode(), exception.getMessage()))
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .build();
     }
 }

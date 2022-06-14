@@ -15,9 +15,9 @@ public class SaveExceptionHandler implements ExceptionMapper<SaveException> {
     @Override
     public Response toResponse(SaveException exception) {
         return Response
-                .status(BAD_REQUEST)
-                .entity(new ErrorResponse(BAD_REQUEST.getStatusCode(), exception.getMessage()))
-                .type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
+            .status(BAD_REQUEST)
+            .entity(new ErrorResponse(BAD_REQUEST.getStatusCode(), exception.getMessage()))
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .build();
     }
 }
